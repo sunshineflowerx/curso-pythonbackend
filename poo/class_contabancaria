@@ -1,0 +1,75 @@
+from abc import ABC, abstractmethod
+
+class ContaBancaria(ABC): # classe abstrata
+    def __init__(self, saldo_inicial=0):
+        self.__saldo = saldo_inicial
+
+    def depositar(self, valor):
+        if valor > 0:
+            self.__saldo += valor
+            print(f"Depósito realizado do valor R${valor},00")
+
+    def get_saldo(self): #getter
+        return self.__saldo
+
+    @abstractmethod
+    def sacar(self, valor):
+        pass
+
+
+class ContaCorrente(ContaBancaria): # classe concreta
+
+    def __init__(self, saldo_inicial=0,
+                 taxa_operacao=1.50):
+        self.__taxa_operacao = taxa_operacao
+        super().__init__(saldo_inicial)
+        self.__taxa_operacao = taxa_operacao
+
+    def sacar(self, valor):
+        custo_total = valor + self.__taxa_operacao
+        if valor > 0 and self.get_saldo() >= custo_total:
+            novo_saldo = self.get_saldo() - custo_total
+            self._ContaBancaria__saldo = novo_saldo
+            print(f"Saque de R${valor:.2f},00 realizado na C. Corrente. Saldo restante {self.get_saldo()}")
+        else:
+            print("Saque não realizado. Saldo insuficiente")
+
+
+class ContaPoupanca(ContaBancaria): # classe concreta
+    def __init__(self, saldo_inicial=0,
+                 taxa_juros=0.1):
+        super().__init__(saldo_inicial)
+        self.__taxa_juros = taxa_juros
+
+    def sacar(self, valor):
+        if valor > 0 and self.get_saldo() >= valor:
+            novo_saldo = self.get_saldo() - valor
+            self._ContaBancaria__saldo = novo_saldo
+            print(f"Saque de R${valor:.2f},00 realizado na C. Poupança. Saldo restante {self.get_saldo()}")
+        else:
+            print("Saque não realizado. Saldo insuficiente")
+
+    def aplicar_juros(self):
+        juros = self.get_saldo() * self.taxa__juros
+        self.depositar(juros)
+        print(f"Juros de R${juros},00 aplicados na Poupança!")
+
+
+
+class Cliente:
+    def __init__(self, nome):
+        self.nome = nome
+        self.__contas = []
+
+    def adicionar_conta(self, conta: ContaBancaria):
+        self.__contas.append(conta)
+        print(f"Conta do tipo {type(conta).__name__} adicionada para o cliente {self.nome}")
+
+#Criando objetos
+cl_joao = Cliente("João da Silva")
+cl_joao.adicionar_conta(ContaPoupanca(10000))
+cl_joao.adicionar_conta(ContaCorrente())
+
+conta1 = ContaPoupanca(1000)
+#Sacar
+conta1.sacar(100)
